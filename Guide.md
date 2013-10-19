@@ -28,7 +28,7 @@ More information about Flask http://flask.pocoo.org/ and dont forget to look at 
 5.2 Type in the following code
 
 <code>
-from flask import Flask
+from flask import Flask<br>
 
 app = Flask(__name__)
 
