@@ -1,0 +1,109 @@
+<html>
+<head>
+<title>RaspberryPi Status</title>
+<style>
+body
+{
+  background-color:#008AE6;
+  color:#ffffff;
+  font-size: 12px;
+}
+</style>
+</head>
+
+<script type=text/javascript
+  src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js"></script>
+<script type=text/javascript>
+  var $SCRIPT_ROOT = {{ request.script_root|tojson|safe }};
+</script>
+
+<script type=text/javascript>
+  //Create timer so it updates every 3 second
+  setInterval(function() { updateTimer(); }, 3000);
+  
+  //Hold a unique value so we dont get chached values
+  var unique;
+      
+  function updateTimer()
+  {
+      //Create the unique value from date
+      var d=new Date();
+      unique = "?"+d.valueOf();  
+      
+      //Update the update time
+      var t=d.toLocaleTimeString();
+      $('#updated').text(t);
+      
+      //Make our requests
+      get_memory();
+      get_uptime();
+      get_hdd();
+      get_temperature();
+      get_cpu_speed();
+      get_curr_networkspeed();
+  }
+
+  function get_memory() {
+      $.getJSON($SCRIPT_ROOT + '/_get_memory' + unique, {
+        }, function(data) {
+          $('#mem_free').text(data.free);
+          $('#mem_total').text(data.total);
+      });
+  }
+  
+  function get_uptime() {
+      $.getJSON($SCRIPT_ROOT + '/_get_up_time' + unique, {
+        }, function(data) {
+          $('#uptime').text(data.uptime);
+      });
+  }
+    
+  function get_hdd() {
+      $.getJSON($SCRIPT_ROOT + '/_get_hdd' + unique, {
+        }, function(data) {
+          $('#hdd_free').text(data.free);
+          $('#hdd_total').text(data.total);
+      });
+  }    
+
+  function get_temperature() {
+      $.getJSON($SCRIPT_ROOT + '/_get_temperature' + unique, {
+        }, function(data) {
+          $('#temperature').text(data.temperature);
+      });
+  } 
+  
+  function get_cpu_speed() {
+      $.getJSON($SCRIPT_ROOT + '/_get_cpu_speed' + unique, {
+        }, function(data) {
+          $('#cpu_speed').text(data.cpu_speed);
+      });
+  } 
+  
+  function get_curr_networkspeed() {
+      $.getJSON($SCRIPT_ROOT + '/_get_curr_networkspeed' + unique, {
+        }, function(data) {
+          $('#network_sending').text(data.sending);
+          $('#network_reciving').text(data.reciving);
+      });
+  }
+  
+  //Run it once at page load
+  updateTimer();
+</script>
+
+<body>
+  <div>
+      Updated <span id='updated'></span><br />
+      <br />
+      Up time: <span id='uptime'></span> hours<br />
+      CPU speed: <span id='cpu_speed'></span> MHz<br />
+      Temperature: <span id='temperature'></span> C<br />
+      Memory free: <span id='mem_free'></span> Mb of <span id='mem_total'></span> Mb<br />
+      Hdd free: <span id='hdd_free'></span> Mb of <span id='hdd_total'></span> Mb<br />
+      Network sending: <span id='network_sending'></span> kB/s<br />
+      Network reciving: <span id='network_reciving'></span> kB/s<br />
+  </div>
+</body>
+</html>
+
